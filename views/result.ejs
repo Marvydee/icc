@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Application Result — <%= communityName %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="wrap">
+    <% if (passed) { %>
+      <div class="card center">
+        <div class="result-icon success">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h1 class="display mt-0" style="font-size: 26px;">You're in.</h1>
+        <p class="lede" style="margin: 0 auto 28px;">
+          Welcome to <%= communityName %>. Below is your personal invitation link.
+        </p>
+
+        <div class="claim-link-box">
+          <a href="<%= claimUrl %>"><%= claimUrl %></a>
+        </div>
+
+        <div class="warning-note" style="text-align: left;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01" stroke-linecap="round"/><circle cx="12" cy="12" r="9"/></svg>
+          <span>This link is yours alone and works <strong>once</strong>. If you share it,
+          whoever clicks it first will use it up — and you may be held responsible
+          if it's used to bring in someone we'd have otherwise turned away.</span>
+        </div>
+
+        <a href="<%= claimUrl %>" class="btn btn-accent btn-block">Open my invitation</a>
+      </div>
+    <% } else { %>
+      <div class="card center">
+        <div class="result-icon fail">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>
+        </div>
+        <h1 class="display mt-0" style="font-size: 26px;">
+          <% if (reason === 'blocked') { %>
+            We can't approve this application
+          <% } else { %>
+            Not a fit right now
+          <% } %>
+        </h1>
+        <p class="lede" style="margin: 0 auto;">
+          <% if (reason === 'blocked') { %>
+            This contact has been restricted from joining. If you believe this is a mistake, please reach out to an Admin directly.
+          <% } else { %>
+            Based on your answers, we're not able to approve this application at this time.
+            This isn't necessarily permanent — you're welcome to apply again in the future.
+          <% } %>
+        </p>
+      </div>
+    <% } %>
+
+    <%- include('partials/footer') %>
+  </div>
+</body>
+</html>

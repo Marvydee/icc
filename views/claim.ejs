@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Join <%= communityName %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="card center">
+      <% if (state === 'success') { %>
+        <p class="eyebrow" style="justify-content: center;"><span class="dot"></span>You're approved</p>
+        <h1 class="display mt-0" style="font-size: 26px;">Welcome, <%= name %>.</h1>
+        <p class="lede" style="margin: 0 auto 28px;">Tap the logo below to join the WhatsApp group. This link won't work again after you use it, so go ahead and join now.</p>
+
+        <a href="<%= whatsappLink %>" class="logo-link" target="_blank" rel="noopener" aria-label="Join the WhatsApp group" style="position: relative;">
+          <span class="pulse-ring" aria-hidden="true"></span>
+          <img src="/assets/icon-black.png" alt="Join the WhatsApp group" class="logo-img" onerror="this.onerror=null; this.src='/assets/logo-fallback.svg';">
+        </a>
+
+        <p class="hint" style="margin-top: 22px;">
+          If the image above doesn't load, <a href="<%= whatsappLink %>" target="_blank" rel="noopener">tap here to join</a> instead.
+        </p>
+
+      <% } else if (state === 'used') { %>
+        <div class="result-icon fail">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>
+        </div>
+        <h1 class="display mt-0" style="font-size: 26px;">This link has already been used</h1>
+        <p class="lede" style="margin: 0 auto;">
+          Each invitation works only once. If this wasn't you, please contact an Admin —
+          your invitation may have been compromised.
+        </p>
+
+      <% } else if (state === 'expired') { %>
+        <div class="result-icon fail">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h1 class="display mt-0" style="font-size: 26px;">This link has expired</h1>
+        <p class="lede" style="margin: 0 auto;">
+          Invitation links are only valid for a limited time. Please contact an Admin to request a new one.
+        </p>
+
+      <% } else { %>
+        <div class="result-icon fail">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>
+        </div>
+        <h1 class="display mt-0" style="font-size: 26px;">Invalid link</h1>
+        <p class="lede" style="margin: 0 auto;">
+          We couldn't find this invitation. Double check the link, or contact an Admin for help.
+        </p>
+      <% } %>
+    </div>
+
+    <%- include('partials/footer') %>
+  </div>
+</body>
+</html>

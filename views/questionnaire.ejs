@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Application — <%= communityName %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand-mark">
+      <img src="/assets/icon-black.png" alt="">
+      <span class="wordmark"><%= communityName %></span>
+    </div>
+
+    <p class="eyebrow"><span class="dot"></span>Step 2 of 2</p>
+    <h1 class="display" style="font-size: 28px;">Welcome to <%= communityName %>!</h1>
+    <p class="lede">
+      We're building a vibrant community of genuine people who value connection,
+      respect, fun, networking, and meaningful engagement. Please complete this
+      short application thoughtfully.
+    </p>
+    <p class="hint" style="margin-bottom: 28px; font-size: 13px;">
+      Submission does not guarantee approval, and applications may be reviewed at the discretion of the admin team.
+    </p>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="error-banner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01" stroke-linecap="round"/></svg>
+        <span><%= error %></span>
+      </div>
+    <% } %>
+
+    <form method="POST" action="/apply/submit">
+      <input type="hidden" name="agreement_accepted_at" value="<%= agreementAcceptedAt %>">
+
+      <%
+        // Group questions by section, preserving order of first appearance
+        const sections = [];
+        const bySection = {};
+        questions.forEach(function(q) {
+          if (!bySection[q.section]) {
+            bySection[q.section] = [];
+            sections.push(q.section);
+          }
+          bySection[q.section].push(q);
+        });
+      %>
+
+      <% sections.forEach(function(sectionName, sIdx) { %>
+        <div class="card">
+          <p class="eyebrow" style="margin-bottom: 18px;"><span class="dot"></span><%= sectionName %></p>
+
+          <% bySection[sectionName].forEach(function(q) { %>
+            <div class="field-group">
+              <label>
+                <%= q.label %>
+                <% if (q.required) { %><span class="req">*</span><% } %>
+              </label>
+
+              <% if (q.type === 'textarea') { %>
+                <textarea name="<%= q.id %>" <%= q.required ? 'required' : '' %>><%= formData[q.id] || '' %></textarea>
+
+              <% } else if (q.type === 'select') { %>
+                <select name="<%= q.id %>" <%= q.required ? 'required' : '' %>>
+                  <option value="" disabled <%= !formData[q.id] ? 'selected' : '' %>>Select an answer…</option>
+                  <% q.options.forEach(function(opt) { %>
+                    <option value="<%= opt %>" <%= formData[q.id] === opt ? 'selected' : '' %>><%= opt %></option>
+                  <% }) %>
+                </select>
+
+              <% } else if (q.type === 'tel') { %>
+                <input type="tel" name="<%= q.id %>" placeholder="+234 800 000 0000" value="<%= formData[q.id] || '' %>" <%= q.required ? 'required' : '' %>>
+
+              <% } else { %>
+                <input type="text" name="<%= q.id %>" value="<%= formData[q.id] || '' %>" <%= q.required ? 'required' : '' %>>
+              <% } %>
+
+              <% if (q.note) { %>
+                <p class="hint"><%= q.note %></p>
+              <% } %>
+            </div>
+          <% }) %>
+        </div>
+      <% }) %>
+
+      <button type="submit" class="btn btn-accent btn-block">Submit application</button>
+    </form>
+
+    <%- include('partials/footer') %>
+  </div>
+</body>
+</html>

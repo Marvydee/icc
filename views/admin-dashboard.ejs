@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="wrap" style="max-width: 880px;">
+    <div class="brand-mark">
+      <img src="/assets/icon-black.png" alt="">
+      <span class="wordmark">Admin</span>
+    </div>
+    <h1 class="display" style="font-size: 28px;">Applicants</h1>
+
+    <div class="stat-row">
+      <% const countMap = {}; counts.forEach(c => countMap[c.status] = c.count); %>
+      <div class="stat"><div class="num"><%= countMap.passed || 0 %></div><div class="lbl">Passed</div></div>
+      <div class="stat"><div class="num"><%= countMap.failed || 0 %></div><div class="lbl">Failed</div></div>
+      <div class="stat"><div class="num"><%= countMap.pending || 0 %></div><div class="lbl">Pending</div></div>
+    </div>
+
+    <div class="filter-tabs">
+      <a href="/admin/dashboard?key=<%= adminKey %>&status=all" class="<%= statusFilter === 'all' ? 'active' : '' %>">All</a>
+      <a href="/admin/dashboard?key=<%= adminKey %>&status=passed" class="<%= statusFilter === 'passed' ? 'active' : '' %>">Passed</a>
+      <a href="/admin/dashboard?key=<%= adminKey %>&status=failed" class="<%= statusFilter === 'failed' ? 'active' : '' %>">Failed</a>
+    </div>
+
+    <div class="card card-tight" style="overflow-x: auto;">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Score</th>
+            <th>Status</th>
+            <th>Applied</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% applicants.forEach(function(a) { %>
+            <tr>
+              <td><a href="/admin/applicant/<%= a.id %>?key=<%= adminKey %>"><%= a.full_name %></a></td>
+              <td><%= a.phone_number %></td>
+              <td><%= a.score %>/100</td>
+              <td><span class="status-badge <%= a.status %>"><%= a.status %></span></td>
+              <td><%= new Date(a.created_at).toLocaleDateString() %></td>
+              <td><a href="/admin/applicant/<%= a.id %>?key=<%= adminKey %>">View →</a></td>
+            </tr>
+          <% }) %>
+          <% if (applicants.length === 0) { %>
+            <tr><td colspan="6" style="text-align:center; padding: 32px;">No applicants yet.</td></tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

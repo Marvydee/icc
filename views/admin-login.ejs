@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="wrap" style="max-width: 420px; padding-top: 100px;">
+    <div class="brand-mark">
+      <img src="/assets/icon-black.png" alt="">
+      <span class="wordmark">Admin</span>
+    </div>
+    <h1 class="display" style="font-size: 26px;">Dashboard access</h1>
+
+    <% if (error) { %>
+      <div class="error-banner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01" stroke-linecap="round"/></svg>
+        <span><%= error %></span>
+      </div>
+    <% } %>
+
+    <form method="POST" action="/admin">
+      <label>Admin password</label>
+      <input type="password" name="password" required autofocus>
+      <button type="submit" class="btn btn-accent btn-block">Sign in</button>
+    </form>
+  </div>
+</body>
+</html>

@@ -1,0 +1,199 @@
+# Community Gate
+
+A screening gateway that sits in front of your WhatsApp group invite link.
+Applicants fill out a questionnaire, get auto-scored, and — if they pass —
+receive a **personal, single-use link** that reveals the real WhatsApp invite.
+Once that link is opened, it stops working for anyone else.
+
+## What this protects you from (and what it doesn't)
+
+- ✅ It gives you a timestamped record of every applicant's answers and the
+  agreement they accepted — your main defense if a member later claims you
+  "let anyone in without checking."
+- ✅ It stops people from reusing or pre-sharing an *unused* invitation before
+  it's claimed.
+- ⚠️ It **cannot** stop someone from screenshotting/forwarding the WhatsApp
+  group link itself *after* they've claimed it — nothing technically can,
+  since WhatsApp links work for anyone who has them. Mitigate this by
+  periodically resetting the group's invite link in WhatsApp (Group Info →
+  Invite via Link → Reset link) and watching for unexpected joins.
+- ⚠️ The liability waiver reduces your legal exposure but is not an absolute
+  shield, especially against gross negligence (e.g. knowingly admitting
+  someone you'd already been warned about). Have a lawyer review the wording
+  in `views/agreement.ejs` before relying on it for real disputes.
+
+## How it works
+
+1. **`/`** — Landing page introducing the community.
+2. **`/apply`** — Liability agreement; must be accepted to proceed.
+3. **`/apply/submit`** — Questionnaire scored automatically (see `src/scoring.js`).
+   Score ≥ `PASS_MARK` (default 70/100) → pass.
+4. On pass, a unique token is generated and stored in the `claim_tokens` table,
+   tied to that one applicant, with a 72-hour expiry.
+5. **`/join/:token`** — The applicant's personal claim page. First visit marks
+   the token "used" and reveals `WHATSAPP_GROUP_LINK`. Every subsequent visit
+   shows "this link has already been used."
+6. **`/admin`** — Simple password-gated dashboard to review applicants, see
+   flags, and manually block phone numbers (e.g. after a reported incident).
+
+## Design system
+
+The visual design is built directly from the real Ibadan Cruise Connect logo
+(`public/assets/logo-source.jpeg`) — colors, mark proportions, and typography
+are all derived from it, not generic defaults. See `public/styles.css` for
+the full token system (`--mist`, `--ink`, `--current`, etc.) if you want to
+adjust anything.
+
+**Assets in `public/assets/`:**
+- `icon-black.png` — the plug/"C" mark only, black ink, cropped tight from
+  your real logo. Used on the landing hero, every page header, and the
+  claim page.
+- `logo-full-black.png` / `logo-full-white.png` — full lockup (icon +
+  wordmark), black or white ink. Not currently used in the live pages but
+  available if you add new placements (e.g. print materials, a dark-mode
+  variant).
+- `icon-white.png` — icon-only, white ink, for dark surfaces.
+- `logo-fallback.svg` — a lightweight inline fallback shown on the claim
+  page if `icon-black.png` fails to load for any reason.
+
+The landing page's signature moment is your real logo animating in on
+load: it settles into place with a soft scale/fade, then a small blue
+"spark" appears at the plug's connection point — a nod to the logo's own
+"connect" pun, using the actual uploaded image rather than a redrawn
+version. This only fires once per page load, not on a loop, and respects
+`prefers-reduced-motion`.
+
+## Footer: social links &amp; credit
+
+Every applicant-facing page (landing, agreement, questionnaire, result, and
+claim) shares one footer via `views/partials/footer.ejs`. It shows
+Instagram and Telegram icons, controlled by `INSTAGRAM_URL` and
+`TELEGRAM_URL` in `.env` — leave either blank to hide that icon entirely
+rather than rendering a dead link. The footer also credits "Built by MDJ
+FORGE", linking to https://mdjforge.com.
+
+The admin pages (`/admin`, `/admin/dashboard`, `/admin/applicant/:id`)
+intentionally don't include this footer — it's a public-facing credit and
+social-link block, not something relevant to the internal dashboard your
+team uses. Add `<%- include('partials/footer') %>` to any admin view too if
+you'd rather have it everywhere.
+
+To add a page-specific note above the icons (like the landing page's
+"Applications are reviewed automatically..."), pass it explicitly:
+```ejs
+<%- include('partials/footer', { footerNote: 'Your note here.' }) %>
+```
+Omit the second argument for pages that don't need a note.
+
+## Customizing the questionnaire
+
+Edit `src/scoring.js`. Each question has:
+- `section` — groups questions into cards on the form (Basic Info, Community
+  Fit, Behaviour & Accountability, Community Security, Referral Quality
+  Control, Commitment, Finally)
+- `label` — what's shown to the applicant
+- `type` — `text`, `tel`, `textarea`, or `select`
+- `note` — optional helper text shown under the field
+- `scoring` — either a map of `{ answer: points }`, `'presence'` (scored by
+  whether something plausible was entered, e.g. a URL), or `'manual_signal'`
+  (stored for admin context but not auto-scored — used for all open-ended
+  questions and a couple of informational ones like referrer's name)
+
+The current 18 questions and scoring weights were agreed on with the team
+and sum to exactly 100 points across the scored (closed-ended) questions.
+Open-ended questions aren't auto-scored — they're stored and shown in full
+on the admin applicant detail page, which matters most for applicants who
+land close to the pass mark. Adjust freely — just keep the scored weights
+summing to a sensible max (100 is recommended) if you add or remove
+questions, and re-check `PASS_MARK` in `.env` afterward.
+
+## Deploying on Hostinger
+
+Hostinger's standard hosting includes **MySQL** databases, managed through
+hPanel. Steps:
+
+### 1. Create the database
+- In hPanel: **Databases → MySQL Databases**
+- Create a new database, a new user, and assign the user to the database
+  with full privileges.
+- Note the **host** (often `localhost` on shared hosting), **database name**,
+  **username**, and **password**.
+
+### 2. Get Node.js running
+- If you're on **Hostinger Cloud/VPS hosting**, you have full SSH access —
+  install Node via NodeSource or use a version manager, then proceed as on
+  any VPS.
+- If you're on **shared hosting**, check hPanel for a "Node.js" application
+  manager (Hostinger's "Website → Node.js" section on Business/Premium
+  plans). It lets you point a domain/subdomain at a Node app and set the
+  entry file.
+- If Node.js isn't available on your specific plan, you'll need to either
+  upgrade to a plan that supports it, or deploy this on a separate Node-
+  friendly host (Railway, Render, Fly.io, a Hostinger VPS) and just point
+  your domain's DNS at it.
+
+### 3. Upload and configure
+```bash
+# On your server:
+git clone <your-repo>   # or upload via FTP/File Manager
+cd community-gate
+npm install --production
+cp .env.example .env
+# edit .env with your real DB credentials, WhatsApp link, admin password
+npm run init-db
+npm start
+```
+
+For production, keep the app alive with a process manager:
+```bash
+npm install -g pm2
+pm2 start src/server.js --name community-gate
+pm2 save
+pm2 startup
+```
+
+### 4. Point your domain
+Set up a reverse proxy (Nginx is standard on Hostinger VPS) so your domain
+serves the Node app on port 80/443, or use Hostinger's Node.js app manager
+if you're on shared hosting — it handles this for you.
+
+### 5. Set the real WhatsApp link
+In `.env`, set `WHATSAPP_GROUP_LINK` to your actual group invite link. Never
+put this value anywhere in client-facing HTML/JS — it only gets rendered
+server-side, and only after a token is validated as unused.
+
+## Environment variables
+
+See `.env.example` for the full list. Key ones:
+
+| Variable | Purpose |
+|---|---|
+| `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` | MySQL connection |
+| `WHATSAPP_GROUP_LINK` | The real, secret group invite link |
+| `PASS_MARK` | Minimum score (out of 100) to auto-pass |
+| `ADMIN_PASSWORD` | Shared password for `/admin` — **change this** |
+| `APP_BASE_URL` | Used to build the claim links sent to applicants, e.g. `https://yourdomain.com` |
+| `INSTAGRAM_URL` | Shown as an icon in the footer. Ships with a placeholder — replace with your real link, or blank it to hide the icon. |
+| `TELEGRAM_URL` | Shown as an icon in the footer. |
+
+## Security notes before going live
+
+- Change `ADMIN_PASSWORD` to something long and random — it's currently a
+  single shared password with no rate-limiting beyond the global limiter.
+  For a community of any size, consider adding per-admin accounts later.
+- Rate limiting is already applied to `/apply` and `/join` routes (20
+  requests per 15 minutes per IP) to deter scripted abuse.
+- The `.env` file contains secrets — it's already excluded via `.gitignore`.
+  Never commit it.
+- Periodically reset the WhatsApp group invite link as an extra backstop,
+  especially if you ever suspect a claimed link leaked.
+
+## Local testing
+
+```bash
+npm install
+cp .env.example .env   # point at a local/test MySQL database
+npm run init-db
+npm start
+# visit http://localhost:3000
+```

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= communityName %> — Membership Screening</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="wrap">
+
+    <div class="brand-hero">
+      <div class="brand-hero-mark">
+        <img src="/assets/icon-black.png" alt="<%= communityName %> logo" class="brand-hero-img">
+        <span class="brand-hero-spark" aria-hidden="true"></span>
+      </div>
+    </div>
+
+    <p class="eyebrow center" style="justify-content: center;"><span class="dot"></span>Membership · By application</p>
+    <h1 class="display center"><%= communityName %></h1>
+    <p class="lede center" style="margin: 0 auto 32px;">
+      We keep this community intentional. Every member is reviewed before
+      joining — not as a formality, but because the people inside this
+      group trust that everyone here was actually looked at.
+    </p>
+
+    <ul class="principles">
+      <li>
+        <span class="icon-wrap">
+          <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        A short application, a few honest questions — no essay required.
+      </li>
+      <li>
+        <span class="icon-wrap">
+          <svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        We check for the kind of red flags that have caused real problems before.
+      </li>
+      <li>
+        <span class="icon-wrap">
+          <svg viewBox="0 0 24 24"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        If you're a fit, you get a private, one-time link to join. It only works once.
+      </li>
+    </ul>
+
+    <a href="/apply" class="btn btn-accent btn-block">Start application</a>
+
+    <%- include('partials/footer', { footerNote: 'Applications are reviewed automatically. Most decisions are instant.' }) %>
+  </div>
+</body>
+</html>

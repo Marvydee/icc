@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= applicant.full_name %> — Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="wrap">
+    <p class="eyebrow"><a href="/admin/dashboard?key=<%= adminKey %>">← Back to dashboard</a></p>
+    <h1 class="display" style="font-size: 28px;"><%= applicant.full_name %></h1>
+    <span class="status-badge <%= applicant.status %>"><%= applicant.status %></span>
+
+    <hr class="divider">
+
+    <div class="card">
+      <div class="kv-grid">
+        <div class="kv-item"><div class="k">WhatsApp Number</div><div class="v"><%= applicant.phone_number %></div></div>
+        <div class="kv-item"><div class="k">Score</div><div class="v"><%= applicant.score %>/100</div></div>
+        <div class="kv-item"><div class="k">Applied</div><div class="v"><%= new Date(applicant.created_at).toLocaleString() %></div></div>
+        <div class="kv-item"><div class="k">Agreement accepted</div><div class="v"><%= new Date(applicant.agreement_accepted_at).toLocaleString() %> (<%= applicant.agreement_version %>)</div></div>
+        <div class="kv-item"><div class="k">IP address</div><div class="v"><%= applicant.ip_address || '—' %></div></div>
+        <div class="kv-item">
+          <div class="k">Invitation link status</div>
+          <div class="v">
+            <% if (!applicant.token) { %>
+              Not issued (application did not pass)
+            <% } else if (applicant.used_at) { %>
+              Used on <%= new Date(applicant.used_at).toLocaleString() %>
+            <% } else if (new Date(applicant.expires_at) < new Date()) { %>
+              Expired (unused)
+            <% } else { %>
+              Issued, not yet used — expires <%= new Date(applicant.expires_at).toLocaleString() %>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <% if (applicant.answers._flags && applicant.answers._flags.length > 0) { %>
+      <div class="card">
+        <p class="eyebrow" style="margin-bottom: 14px;"><span class="dot"></span>Flags</p>
+        <ul class="flag-list">
+          <% applicant.answers._flags.forEach(function(flag) { %>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01" stroke-linecap="round"/><circle cx="12" cy="12" r="9"/></svg>
+              <span><%= flag %></span>
+            </li>
+          <% }) %>
+        </ul>
+      </div>
+    <% } %>
+
+    <div class="card">
+      <p class="eyebrow" style="margin-bottom: 18px;"><span class="dot"></span>Application answers</p>
+      <div class="kv-grid">
+        <% Object.keys(applicant.answers).forEach(function(key) { %>
+          <% if (key !== '_flags') { %>
+            <div class="kv-item">
+              <div class="k"><%= key.replace(/_/g, ' ') %></div>
+              <div class="v"><%= applicant.answers[key] || '—' %></div>
+            </div>
+          <% } %>
+        <% }) %>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="eyebrow" style="margin-bottom: 14px;"><span class="dot"></span>Block this number</p>
+      <p class="hint" style="margin-bottom: 16px;">If this applicant turns out to be a bad actor later, blocking their phone number prevents future re-applications with the same number.</p>
+      <form method="POST" action="/admin/block?key=<%= adminKey %>">
+        <input type="hidden" name="phone_number" value="<%= applicant.phone_number %>">
+        <input type="text" name="reason" placeholder="Reason for blocking (optional, kept internally)">
+        <button type="submit" class="btn btn-ghost btn-block">Block <%= applicant.phone_number %></button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

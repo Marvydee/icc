@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Membership Agreement — <%= communityName %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand-mark">
+      <img src="/assets/icon-black.png" alt="">
+      <span class="wordmark"><%= communityName %></span>
+    </div>
+
+    <p class="eyebrow"><span class="dot"></span>Step 1 of 2</p>
+    <h1 class="display" style="font-size: 30px;">Before you apply</h1>
+    <p class="lede">Please read the terms and house rules below, then accept to continue. You'll fill out the actual application on the next page.</p>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="error-banner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01" stroke-linecap="round"/></svg>
+        <span><%= error %></span>
+      </div>
+    <% } %>
+
+    <div class="agreement-box">
+      <h3>1. Purpose of this community</h3>
+      <p><%= communityName %> ("the Community") is a member-run social group. Membership is granted at the sole discretion of its administrators ("Admins") based on responses to a screening questionnaire. Passing screening does not guarantee continued membership — Admins may remove any member at any time for violating community standards.</p>
+
+      <h3>2. No vetting guarantee</h3>
+      <p>The screening process is a good-faith effort to reduce risk, not a background check, identity verification service, or certification of any member's character, intentions, or trustworthiness. Admins rely on information applicants self-report and cannot independently verify most of it.</p>
+
+      <h3>3. Interactions between members</h3>
+      <p>Any dealings you have with other members — financial, romantic, business, social, or otherwise — are solely between you and that member. The Community and its Admins are not a party to those dealings, do not supervise them, and are not responsible for any loss, harm, dispute, fraud, or damage arising from them, whether that interaction happens inside the group, in private chats, or in person.</p>
+
+      <h3>4. Your responsibility</h3>
+      <p>You agree to exercise your own judgment before sending money to, meeting in person with, or otherwise trusting any member of this Community, in the same way you would with anyone met through any other social platform. You are encouraged to report concerning behavior to Admins, but Admins cannot promise to prevent harm before it happens.</p>
+
+      <h3>5. Limitation of liability</h3>
+      <p>To the fullest extent permitted by applicable law, the Community, its Admins, and anyone acting on their behalf will not be liable for any direct, indirect, incidental, or consequential damages arising from your membership or your interactions with any other member. This limitation does not apply where it would be unenforceable under law — for example, in cases of an Admin's own gross negligence or intentional misconduct.</p>
+
+      <h3>6. Removal and link policy</h3>
+      <p>Your invitation link is unique to you and intended for your use only. Sharing, forwarding, or reselling it may result in immediate removal from the Community without refund or appeal (where applicable). Admins may reset or invalidate group links at any time.</p>
+
+      <h3>7. House Rules</h3>
+      <p>By joining, you agree to follow these rules. Violations — repeated or severe — may result in removal without prior notice or warning.</p>
+      <ul class="house-rules">
+        <li><strong>Introductions are compulsory</strong> for new members. One-Time-View (OTV) picture formats are not accepted for introductions.</li>
+        <li><strong>No broadcast messages or external links.</strong> Sharing outside group links is strictly prohibited.</li>
+        <li><strong>No free ads.</strong> Mondays, 9–11am, are the only recognized free ad slot. Outside that window, check in with mods/admins first — unverified ads, event flyers, or promo content will not be permitted.</li>
+        <li><strong>Go easy on the spam.</strong> Quality over quantity. Use OTV for spammy media. Use discretion with stickers and messages.</li>
+        <li><strong>Don't tag the group on your status</strong> without admin permission, even if you think it's beneficial.</li>
+        <li><strong>No initiating group calls</strong> without admin approval — use Club House instead.</li>
+        <li><strong>Stay networking-focused.</strong> Casual chat ("cruise") is welcome, but make sure your presence adds value to you or someone else.</li>
+        <li><strong>No hate — keep the family spirit.</strong> Use your influence to promote unity, not cliques or favoritism.</li>
+        <li><strong>Raise concerns constructively.</strong> Reach out to an admin if something's bothering you — they're willing to listen.</li>
+        <li><strong>Spread love, not shade.</strong> No profanity or hate comments. Tone down toxicity.</li>
+        <li><strong>No body-shaming.</strong></li>
+        <li><strong>No ghost membership.</strong> Inactive or disengaged members may be removed without announcement.</li>
+        <li><strong>Don't disrupt group tasks or activities.</strong> Read the room.</li>
+        <li><strong>This is not a scam zone.</strong> Report anything suspicious — perpetrators face immediate eviction. Members are responsible for their own personal dealings with other members; Admins are not liable if a private transaction goes wrong (see Sections 3–5 above).</li>
+        <li><strong>Never involve parents, siblings, or family members in group bants.</strong> This rule carries serious consequences if broken.</li>
+        <li><strong>Guard your secrets — and others'.</strong> No oversharing of personal matters in the group. What happens in the group stays in the group.</li>
+        <li><strong>It's okay to leave</strong> if group chats aren't for you. If you ever rejoin, please don't do so just to archive the group.</li>
+        <li><strong>No one is too important to be evicted</strong> for breaking the rules.</li>
+      </ul>
+      <p class="hint" style="margin: 4px 0 0;">The group's official active hours are 12pm–12am daily. Check the group bio for the full community brief.</p>
+
+      <h3>8. Data use</h3>
+      <p>Information you submit in the application is stored to support screening decisions and to maintain a record in case of future disputes or reports. It will not be sold to third parties.</p>
+    </div>
+
+    <form method="POST" action="/apply/agree">
+      <div class="checkbox-row">
+        <input type="checkbox" id="agree" name="agree" required>
+        <label for="agree">I have read and agree to the terms above, including the limitation of liability in Section 5 and the House Rules in Section 7.</label>
+      </div>
+      <button type="submit" class="btn btn-accent btn-block">Agree &amp; continue to application</button>
+    </form>
+
+    <%- include('partials/footer') %>
+  </div>
+</body>
+</html>
